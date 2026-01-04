@@ -29,7 +29,6 @@ st.dataframe( df.sample(10))
 
 for col in df.columns:
     pg_type = infer_pg_type(df[col])
-    
     st.write( col, pg_type)
 
 supabase = create_client(
@@ -40,5 +39,6 @@ supabase = create_client(
 rows = df.to_dict(orient="records")
 
 for i in range(0, len(rows), 500):
+    st.html( '.' )
     supabase.table("nhanes").insert(rows[i:i+500]).execute()
 
