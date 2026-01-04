@@ -40,5 +40,5 @@ supabase = create_client(
 rows = df.to_dict(orient="records")
 
 for i in range(0, len(rows), 500):
-    supabase.table("Table").insert(rows[i:i+500]).execute()
+    supabase.table("nhanes").insert(rows[i:i+500]).execute()
 
