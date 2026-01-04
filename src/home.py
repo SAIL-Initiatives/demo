@@ -25,6 +25,8 @@ def infer_pg_type(series: pd.Series) -> str:
  
 
 df = pd.read_csv( '../data/nhanes_before.csv',  )
+st.dataframe( df) 
+
 for col in df.columns:
     pg_type = infer_pg_type(df[col])
     
