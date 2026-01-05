@@ -48,25 +48,37 @@ def infer_pg_type(series: pd.Series) -> str:
             
     return "text"  # Default for everything else
 
-df = pd.read_csv( '../data/nhanes_before.csv', index_col=[0] )
-df = df.replace({np.nan: None}) 
-st.dataframe( df ) 
-st.write( df.shape ) 
-
-for i, col in enumerate(df.columns):
-    pg_type = infer_pg_type(df[col])
-    st.write( i, col, pg_type)
-
 supabase = create_client(
     os.environ['SUPABASE_URL'],
     os.environ['SUPABASE_SERVICE_KEY']  # IMPORTANT: use service role key
 )
 
-rows = df.to_dict(orient="records")
 
-n=500
-for i in range(0, len(rows), n):
-    st.html( '.' )
-    st.write( rows[i] )
-    supabase.table("nhanes").insert(rows[i:i+n]).execute()
+response = supabase.table("nhanes").select("*").order("UID", desc=True).execute()
+rows = response.data
+
+if posts:
+    for i,r in enumeric(rows):        
+        UID text
+        st.markdown(f"{r['UID']} {r['Gender']} {r['Age_y']} {r['Ethnicity']}")
+        st.html( '<hr>')
+        if i>10:
+            break 
+
+else:    
+    df = pd.read_csv( '../data/nhanes_before.csv', index_col=[0] )
+    df = df.replace({np.nan: None}) 
+    st.dataframe( df ) 
+    st.write( df.shape ) 
+    
+    for i, col in enumerate(df.columns):
+        pg_type = infer_pg_type(df[col])
+        st.write( i, col, pg_type)       
+    
+    rows = df.to_dict(orient="records")    
+    n=5000
+    for i in range(0, len(rows), n):
+        st.html( '.' )
+        st.write( rows[i] )
+        supabase.table("nhanes").insert(rows[i:i+n]).execute()
 
