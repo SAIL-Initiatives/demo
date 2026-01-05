@@ -50,7 +50,7 @@ def infer_pg_type(series: pd.Series) -> str:
 
 df = pd.read_csv( '../data/nhanes_before.csv', index_col=[0] )
 df = df.replace({np.nan: None}) 
-st.dataframe( df.sample(10)) 
+st.dataframe( df ) 
 st.write( df.shape ) 
 
 for i, col in enumerate(df.columns):
@@ -64,7 +64,9 @@ supabase = create_client(
 
 rows = df.to_dict(orient="records")
 
-for i in range(0, len(rows), 500):
+n=1
+for i in range(0, len(rows), n):
     st.html( '.' )
-    supabase.table("nhanes").insert(rows[i:i+500]).execute()
+    st.write( rows[i] )
+    supabase.table("nhanes").insert(rows[i:i+n]).execute()
 
