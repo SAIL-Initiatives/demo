@@ -58,17 +58,15 @@ response = supabase.table("nhanes").select("*").order("UID", desc=True).execute(
 rows = response.data
 
 if posts:
-    for i,r in enumeric(rows):        
-        UID text
+    for i,r in enumeric(rows):                
         st.markdown(f"{r['UID']} {r['Gender']} {r['Age_y']} {r['Ethnicity']}")
         st.html( '<hr>')
         if i>10:
             break 
-
 else:    
     df = pd.read_csv( '../data/nhanes_before.csv', index_col=[0] )
     df = df.replace({np.nan: None}) 
-    st.dataframe( df ) 
+    st.dataframe( df.sample(100) ) 
     st.write( df.shape ) 
     
     for i, col in enumerate(df.columns):
