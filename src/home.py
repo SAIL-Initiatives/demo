@@ -12,17 +12,41 @@ st.write( now )
 import pandas as pd
 import psycopg2
 
+
 def infer_pg_type(series: pd.Series) -> str:
+    # 1. Handle Integers (Check for 64-bit/BigInt)
     if pd.api.types.is_integer_dtype(series):
+        if series.max() > 2147483647 or series.min() < -2147483648:
+            return "bigint"
         return "integer"
+    
+    # 2. Handle Floating Point
     if pd.api.types.is_float_dtype(series):
         return "double precision"
+    
+    # 3. Handle Booleans
     if pd.api.types.is_bool_dtype(series):
         return "boolean"
+    
+    # 4. Handle Datetime and Timedelta (Intervals)
     if pd.api.types.is_datetime64_any_dtype(series):
         return "timestamptz"
-    return "text"
- 
+    if pd.api.types.is_timedelta64_dtype(series):
+        return "interval"  #
+    
+    # 5. Handle Objects (Strings, UUIDs, JSON)
+    if pd.api.types.is_object_dtype(series):
+        # Sample first non-null value for more specific inference
+        first_val = series.dropna().iloc[0] if not series.dropna().empty else None
+        
+        if isinstance(first_val, (dict, list)):
+            return "jsonb"  # Best practice for structured data
+        
+        # Basic check for UUID strings (8-4-4-4-12 pattern)
+        if isinstance(first_val, str) and len(first_val) == 36 and first_val.count('-') == 4:
+            return "uuid"
+            
+    return "text"  # Default for everything else
 
 df = pd.read_csv( '../data/nhanes_before.csv', index_col=[0] )
 df = df.replace({np.nan: None}) 
