@@ -29,9 +29,9 @@ df = df.replace({np.nan: None})
 st.dataframe( df.sample(10)) 
 st.write( df.shape ) 
 
-for col in df.columns:
+for i, col in enumerate(df.columns):
     pg_type = infer_pg_type(df[col])
-    st.write( col, pg_type)
+    st.write( i, col, pg_type)
 
 supabase = create_client(
     os.environ['SUPABASE_URL'],
