@@ -64,7 +64,7 @@ supabase = create_client(
 
 rows = df.to_dict(orient="records")
 
-n=1
+n=500
 for i in range(0, len(rows), n):
     st.html( '.' )
     st.write( rows[i] )
