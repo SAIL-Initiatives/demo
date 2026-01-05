@@ -54,14 +54,14 @@ supabase = create_client(
 )
 
 
-st.heading('Original CSV database')
+st.markdown('## Original CSV database')
 df = pd.read_csv( '../data/nhanes_before.csv', index_col=[0] )
 df = df.replace({np.nan: None}) 
 st.dataframe( df.sample(100) ) 
 st.write( df.shape )
 
 
-st.heading('Augmented database hosted on Supabase')
+st.markdown('## Augmented database hosted on Supabase')
 response = supabase.table("nhanes").select("*").order("UID", desc=True).execute()
 rows = response.data
 
