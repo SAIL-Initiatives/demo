@@ -58,7 +58,7 @@ supabase = create_client(
     os.environ['SUPABASE_SERVICE_KEY']  # IMPORTANT: use service role key
 )
 
-tabs = st.tabs( 'Phygital', 'SQL' )
+tabs = st.tabs( ['Phygital', 'SQL'] )
 with tabs[0]:
     # ---------------------------
     # 1. Public / simulated data
