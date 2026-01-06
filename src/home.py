@@ -63,14 +63,17 @@ st.write( df.shape )
 
 st.markdown('## Augmented database hosted on Supabase')
 response = supabase.table("nhanes").select("*").order("UID", desc=True).execute()
-rows = response.data
+res = pd.DataFrame(response.data)
+st.write( res.shape )
 
-if rows:
-    for i,r in enumerate(rows):                
-        st.markdown(f"{r['UID']} {r['Gender']} {r['Age_y']} {r['Ethnicity']} {r['Red_edu']} {r['Ref_marital']} {r['Smoke_home']}")
-        #st.html( '<hr>')
-        if i>10:
-            break 
+if res:
+    st.dataframe( res )
+    if 0:
+        for i,r in enumerate(rows):                
+            st.markdown(f"{r['UID']} {r['Gender']} {r['Age_y']} {r['Ethnicity']} {r['Red_edu']} {r['Ref_marital']} {r['Smoke_home']}")
+            #st.html( '<hr>')
+            if i>10:
+                break 
 else:     
     for i, col in enumerate(df.columns):
         pg_type = infer_pg_type(df[col])
