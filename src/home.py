@@ -67,7 +67,7 @@ rows = response.data
 
 if rows:
     for i,r in enumerate(rows):                
-        st.markdown(f"{r['UID']} {r['Gender']} {r['Age_y']} {r['Ethnicity']} {r['Ref_edu']} {r['Ref_marital']} {r['Smoke_home']}")
+        st.markdown(f"{r['UID']} {r['Gender']} {r['Age_y']} {r['Ethnicity']} {r['Red_edu']} {r['Ref_marital']} {r['Smoke_home']}")
         #st.html( '<hr>')
         if i>10:
             break 
