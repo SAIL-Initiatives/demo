@@ -105,10 +105,10 @@ st.write(response)
 
 
 st.markdown('# ')
-response = supabase.table("nhanes").select("Age_y","Ethnicity","Gender","Ref_marital","Ref_edu", "Smoke_home").eq("Gender", "Male").order("UID").execute()
+response = supabase.table("nhanes").select("Age_y","Ethnicity","Gender","Ref_marital","Red_edu", "Smoke_home").eq("Gender", "Male").order("UID").execute()
 df2 = pd.DataFrame(response.data)
 st.dataframe(df2, use_container_width=True)
 
-response = supabase.table("nhanes").select("Age_y","Ethnicity","Gender","Ref_marital","Ref_edu", "Smoke_home").eq("Gender", "Female").order("UID").execute()
+response = supabase.table("nhanes").select("Age_y","Ethnicity","Gender","Ref_marital","Red_edu", "Smoke_home").eq("Gender", "Female").order("UID").execute()
 df1 = pd.DataFrame(response.data)
 st.dataframe(df1, use_container_width=True)
