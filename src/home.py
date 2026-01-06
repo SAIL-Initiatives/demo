@@ -67,13 +67,11 @@ rows = response.data
 
 if rows:
     for i,r in enumerate(rows):                
-        st.markdown(f"{r['UID']} {r['Gender']} {r['Age_y']} {r['Ethnicity']}")
-        st.html( '<hr>')
+        st.markdown(f"{r['UID']} {r['Gender']} {r['Age_y']} {r['Ethnicity']} {r['Ref_edu']} {r['Ref_']}")
+        #st.html( '<hr>')
         if i>10:
             break 
-else:    
- 
-    
+else:     
     for i, col in enumerate(df.columns):
         pg_type = infer_pg_type(df[col])
         st.write( i, col, pg_type)       
@@ -89,8 +87,11 @@ else:
 #new_file = getUserFile()
 #data = supabase.storage.from_(bucket_name).upload("/user1/profile.png", new_file)
 
-# data = supabase.table("nhanes").select("Age_y","Ethnicity","Gender","Ref_marital","Ref_edu").eq("country", "IL").order("UID").execute()
 
+# .explain() feature is disabled by default on the PostgREST server, to enable, issue SQL:
+#
+#     ALTER ROLE authenticator SET pgrst.db_plan_enabled = true;
+#     NOTIFY pgrst, 'reload config';
 
 response = (
     supabase.table("nhanes")
@@ -101,3 +102,13 @@ response = (
 
 st.markdown( '# Explain' )
 st.write(response)
+
+
+st.markdown('# ')
+response = supabase.table("nhanes").select("Age_y","Ethnicity","Gender","Ref_marital","Ref_edu", "Smoke_home").eq("Gender", "Male").order("UID").execute()
+df2 = pd.DataFrame(response.data)
+st.dataframe(df2, use_container_width=True)
+
+response = supabase.table("nhanes").select("Age_y","Ethnicity","Gender","Ref_marital","Ref_edu", "Smoke_home").eq("Gender", "Female").order("UID").execute()
+df1 = pd.DataFrame(response.data)
+st.dataframe(df1, use_container_width=True)
