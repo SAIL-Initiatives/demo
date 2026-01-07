@@ -56,7 +56,16 @@ def report_types( df ):
     for i, col in enumerate(df.columns):
         pg_type = infer_pg_type(df[col])
         st.write( col, pg_type)     
-
+def insert(table_id, df):
+    n=5000
+    rows = df.to_dict(orient="records")            
+    st.markdown('# Admissions - Training set')
+    n=5000
+    for i in range(0, df.shape[0], n):
+        st.html( '.' )
+        st.write( rows[i] )
+        supabase.table( table_id ).insert(rows[i:i+n]).execute()
+    st.write('done')
 
 
 supabase = create_client(
@@ -65,6 +74,8 @@ supabase = create_client(
 )
 tabs = st.tabs( ['SQL'] )
   
+
+
 
 with tabs[0]: 
 
@@ -79,8 +90,7 @@ with tabs[0]:
 
         st.markdown('## Admissions')
         report_types(df3)
-        st.dataframe( df3.sample(100) ) 
-        st.write( df3.shape )     
+        insert("admissions", df3)
         
     except Exception as e:
         st.markdown('# Read from source')
@@ -109,12 +119,8 @@ with tabs[0]:
         
         rows = df.to_dict(orient="records")            
         st.markdown('# DischargeMe - Training set')
-        n=5000
-        for i in range(0, len(rows), n):
-            st.html( '.' )
-            st.write( rows[i] )
-            supabase.table("DischargeMe").insert(rows[i:i+n]).execute()
-        st.write('done')
+        
+        insert("DischargeMe", df)
 if 0:  
     
     
