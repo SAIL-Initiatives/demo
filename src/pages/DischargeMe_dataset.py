@@ -64,24 +64,34 @@ tabs = st.tabs( ['SQL'] )
   
 
 with tabs[0]: 
-    
-    st.markdown('## Original CSV database')
-    df = pd.read_csv( '../data/ACL24-DischargeMe/triage.csv.gz', index_col=[0] )
-    df = df.replace({np.nan: None}) 
-    st.dataframe( df.sample(100) ) 
-    st.write( df.shape )            
-    
-    for i, col in enumerate(df.columns):
-        pg_type = infer_pg_type(df[col])
-        st.write( col, pg_type)       
 
-    rows = df.to_dict(orient="records")            
-    st.markdown('# DischargeMe - Training set')
-    n=5000
-    for i in range(0, len(rows), n):
-        st.html( '.' )
-        st.write( rows[i] )
-        supabase.table("DischargeMe").insert(rows[i:i+n]).execute()
+    try:
+        response = supabase.table("DischargeMe").select("*").order("UID", desc=True).execute()
+        res = response.data
+    except:
+        st.markdown('## Discharge target')
+        df2 = pd.read_csv( '../data/ACL24-DischargeMe/discharge_target_test1.csv.gz', index_col=[0] )
+        df2 = df2.replace({np.nan: None}) 
+        st.dataframe( df2.sample(100) ) 
+        st.write( df2.shape )            
+        
+        st.markdown('## Triage')
+        df = pd.read_csv( '../data/ACL24-DischargeMe/triage_test1.csv.gz', index_col=[0] )
+        df = df.replace({np.nan: None}) 
+        st.dataframe( df.sample(100) ) 
+        st.write( df.shape )            
+        
+        for i, col in enumerate(df.columns):
+            pg_type = infer_pg_type(df[col])
+            st.write( col, pg_type)       
+    
+        rows = df.to_dict(orient="records")            
+        st.markdown('# DischargeMe - Training set')
+        n=5000
+        for i in range(0, len(rows), n):
+            st.html( '.' )
+            st.write( rows[i] )
+            supabase.table("DischargeMe").insert(rows[i:i+n]).execute()
         
 if 0:  
     
