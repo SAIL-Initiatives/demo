@@ -39,27 +39,30 @@ def infer_pg_type(series: pd.Series) -> str:
     if pd.api.types.is_datetime64_any_dtype(series):
         return "timestamptz"
     if pd.api.types.is_timedelta64_dtype(series):
-        return "interval"  #
-    
+        return "interval"  
+        
     # 5. Handle Objects (Strings, UUIDs, JSON)
     if pd.api.types.is_object_dtype(series):
         # Sample first non-null value for more specific inference
-        first_val = series.dropna().iloc[0] if not series.dropna().empty else None
-        
+        first_val = series.dropna().iloc[0] if not series.dropna().empty else None        
         if isinstance(first_val, (dict, list)):
-            return "jsonb"  # Best practice for structured data
-        
+            return "jsonb"  # Best practice for structured data        
         # Basic check for UUID strings (8-4-4-4-12 pattern)
         if isinstance(first_val, str) and len(first_val) == 36 and first_val.count('-') == 4:
-            return "uuid"
-            
+            return "uuid"            
     return "text"  # Default for everything else
+    
+def report_types( df ):
+    for i, col in enumerate(df.columns):
+        pg_type = infer_pg_type(df[col])
+        st.write( col, pg_type)     
+
+
 
 supabase = create_client(
     os.environ['SUPABASE_URL'],
     os.environ['SUPABASE_SERVICE_KEY']  # IMPORTANT: use service role key
 )
-
 tabs = st.tabs( ['SQL'] )
   
 
@@ -69,24 +72,28 @@ with tabs[0]:
         response = supabase.table("DischargeMe").select("*").order("stay_id", desc=True).execute()
         res = response.data
         st.write( res ) 
+
+        
+        df3 = pd.read_csv( '../data/ACL24-DischargeMe/admissions.csv.gz', index_col=[0] )
+        df3 = df3.replace({np.nan: None}) 
+
+        st.markdown('## Admissions')
+        report_types(df3)
+        st.dataframe( df3.sample(100) ) 
+        st.write( df3.shape )     
+        
     except Exception as e:
         st.markdown('# Read from source')
         df2 = pd.read_csv( '../data/ACL24-DischargeMe/discharge_target_test1.csv.gz', index_col=[0] )
         df2 = df2.replace({np.nan: None}) 
         
         
-        
-        df3 = pd.read_csv( '../data/ACL24-DischargeMe/admissions.csv.gz', index_col=[0] )
-        df3 = df3.replace({np.nan: None}) 
+
 
         
         df = pd.read_csv( '../data/ACL24-DischargeMe/triage_test1.csv.gz', index_col=[0] )
         df = df.replace({np.nan: None}) 
         
-        def report_types( df ):
-            for i, col in enumerate(df.columns):
-                pg_type = infer_pg_type(df[col])
-                st.write( col, pg_type)     
 
         st.markdown('## Discharge')
         report_types(df2)
@@ -98,10 +105,7 @@ with tabs[0]:
         st.dataframe( df.sample(100) ) 
         st.write( df.shape )       
 
-        st.markdown('## Admissions')
-        report_types(df3)
-        st.dataframe( df3.sample(100) ) 
-        st.write( df3.shape )      
+ 
         
         rows = df.to_dict(orient="records")            
         st.markdown('# DischargeMe - Training set')
