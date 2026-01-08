@@ -78,22 +78,15 @@ tabs = st.tabs( ['SQL'] )
 
 
 with tabs[0]: 
-
     try:
-        st.markdown('# DischargeMe')
-        response = supabase.table("DischargeMe").select("*").order("stay_id", desc=True).execute()
-        res = response.data
-        st.dataframe( pd.DataFrame(res) ) 
-
-        tid = 'patients'
-        st.markdown( f'# {id}')
-        response = supabase.table( tid ).select("*").order("stay_id", desc=True).execute()
-        res = response.data
-        st.dataframe( pd.DataFrame(res) ) 
-        
+        for tid in ['DischargeMe','admissions','patients','triage']:
+            # .order("stay_id", desc=True)
+            response = supabase.table( tid ).select("*").execute()
+            res = response.data
+            st.write( tid )
+            st.dataframe( pd.DataFrame(res).sample(10) )         
     except Exception as e:
         st.markdown('# Read from source')
-
         dfs={}
         c=0
         dfs[c] = pd.read_csv( '../data/ACL24-DischargeMe/triage_test1.csv.gz', index_col=[0] )
@@ -107,13 +100,21 @@ with tabs[0]:
         c+=1
         dfs[c] = pd.read_csv( '../data/ACL24-DischargeMe/patients.csv.gz', index_col=[0] )
         dfs[c].replace({np.nan: None}, inplace=True) 
-        for c in range(c+1):
-            report_types(dfs[c])
-            insert("patients", dfs[c])
 
-if 0:  
+        tids = ['DischargeMe','admissions','patients','triage']
+        for c in range(4):
+            report_types(dfs[c])
+            try:
+                insert(tids[c], dfs[c])
+            except Exception as e:
+                st.write( e )
+
     
-    
+
+
+
+
+if 0:        
     # .explain() feature is disabled by default on the PostgREST server, to enable, issue SQL:
     #
     #     ALTER ROLE authenticator SET pgrst.db_plan_enabled = true;
