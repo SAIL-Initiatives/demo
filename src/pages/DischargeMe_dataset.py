@@ -82,45 +82,32 @@ with tabs[0]:
     try:
         response = supabase.table("DischargeMe").select("*").order("stay_id", desc=True).execute()
         res = response.data
-        st.write( res ) 
-
+        st.dataframe( pd.DataFrame(res) ) 
+        df4 = pd.read_csv( '../data/ACL24-DischargeMe/patients.csv.gz', index_col=[0] )
+        df4 = df4.replace({np.nan: None}) 
+        report_types(df4)
         
-        df3 = pd.read_csv( '../data/ACL24-DischargeMe/admissions.csv.gz', index_col=[0] )
-        df3 = df3.replace({np.nan: None}) 
-
-        st.markdown('## Admissions')
-        report_types(df3)
-        insert("admissions", df3)
         
     except Exception as e:
         st.markdown('# Read from source')
-        df2 = pd.read_csv( '../data/ACL24-DischargeMe/discharge_target_test1.csv.gz', index_col=[0] )
-        df2 = df2.replace({np.nan: None}) 
-        
-        
-
-
-        
+                
         df = pd.read_csv( '../data/ACL24-DischargeMe/triage_test1.csv.gz', index_col=[0] )
         df = df.replace({np.nan: None}) 
         
+        df2 = pd.read_csv( '../data/ACL24-DischargeMe/discharge_target_test1.csv.gz', index_col=[0] )
+        df2 = df2.replace({np.nan: None}) 
 
-        st.markdown('## Discharge')
-        report_types(df2)
-        st.dataframe( df2.sample(100) ) 
-        st.write( df2.shape )            
-        
-        st.markdown('## Triage')
-        report_types(df)
-        st.dataframe( df.sample(100) ) 
-        st.write( df.shape )       
+        df3 = pd.read_csv( '../data/ACL24-DischargeMe/admissions.csv.gz', index_col=[0] )
+        df3 = df3.replace({np.nan: None}) 
 
- 
-        
-        rows = df.to_dict(orient="records")            
-        st.markdown('# DischargeMe - Training set')
-        
-        insert("DischargeMe", df)
+
+
+        try:
+            insert("admissions", df4)
+        except:
+            pass
+
+
 if 0:  
     
     
