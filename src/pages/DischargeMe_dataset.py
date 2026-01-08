@@ -80,26 +80,36 @@ tabs = st.tabs( ['SQL'] )
 with tabs[0]: 
 
     try:
+        st.markdown('# DischargeMe')
         response = supabase.table("DischargeMe").select("*").order("stay_id", desc=True).execute()
         res = response.data
         st.dataframe( pd.DataFrame(res) ) 
-        df4 = pd.read_csv( '../data/ACL24-DischargeMe/patients.csv.gz', index_col=[0] )
-        df4 = df4.replace({np.nan: None}) 
-        report_types(df4)
-        insert("patients", df4)
+
+        tid = 'patients'
+        st.markdown( f'# {id}')
+        response = supabase.table( tid ).select("*").order("stay_id", desc=True).execute()
+        res = response.data
+        st.dataframe( pd.DataFrame(res) ) 
         
     except Exception as e:
         st.markdown('# Read from source')
-                
-        df = pd.read_csv( '../data/ACL24-DischargeMe/triage_test1.csv.gz', index_col=[0] )
-        df = df.replace({np.nan: None}) 
-        
-        df2 = pd.read_csv( '../data/ACL24-DischargeMe/discharge_target_test1.csv.gz', index_col=[0] )
-        df2 = df2.replace({np.nan: None}) 
 
-        df3 = pd.read_csv( '../data/ACL24-DischargeMe/admissions.csv.gz', index_col=[0] )
-        df3 = df3.replace({np.nan: None}) 
-
+        dfs={}
+        c=0
+        dfs[c] = pd.read_csv( '../data/ACL24-DischargeMe/triage_test1.csv.gz', index_col=[0] )
+        dfs[c].replace({np.nan: None}, inplace=True) 
+        c+=1
+        dfs[c] = pd.read_csv( '../data/ACL24-DischargeMe/discharge_target_test1.csv.gz', index_col=[0] )
+        dfs[c].replace({np.nan: None}, inplace=True) 
+        c+=1
+        dfs[c] = pd.read_csv( '../data/ACL24-DischargeMe/admissions.csv.gz', index_col=[0] )
+        dfs[c].replace({np.nan: None}, inplace=True)
+        c+=1
+        dfs[c] = pd.read_csv( '../data/ACL24-DischargeMe/patients.csv.gz', index_col=[0] )
+        dfs[c].replace({np.nan: None}, inplace=True) 
+        for c in range(c+1):
+            report_types(dfs[c])
+            insert("patients", dfs[c])
 
 if 0:  
     
