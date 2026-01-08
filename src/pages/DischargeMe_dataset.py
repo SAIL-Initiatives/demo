@@ -86,7 +86,7 @@ with tabs[0]:
         df4 = pd.read_csv( '../data/ACL24-DischargeMe/patients.csv.gz', index_col=[0] )
         df4 = df4.replace({np.nan: None}) 
         report_types(df4)
-        
+        insert("patients", df4)
         
     except Exception as e:
         st.markdown('# Read from source')
@@ -99,13 +99,6 @@ with tabs[0]:
 
         df3 = pd.read_csv( '../data/ACL24-DischargeMe/admissions.csv.gz', index_col=[0] )
         df3 = df3.replace({np.nan: None}) 
-
-
-
-        try:
-            insert("admissions", df4)
-        except:
-            pass
 
 
 if 0:  
