@@ -102,7 +102,7 @@ with tabs[0]:
         dfs[c].replace({np.nan: None}, inplace=True) 
 
         tids = ['triage','DischargeMe','admissions','patients']
-        for c in [0,2,3]:
+        for c in [0]:
             report_types(dfs[c])
             try:
                 insert(tids[c], dfs[c])
