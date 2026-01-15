@@ -33,6 +33,7 @@ cap = cv2.VideoCapture(video_source)
 aruco_dict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
 parameters = cv2.aruco.DetectorParameters_create()
 
+
 # Streamlit video display
 frame_window = st.image([])
 
