@@ -1,6 +1,6 @@
 # Core computer vision
-opencv-python==4.8.1.78
-opencv-contrib-python==4.8.1.78
+opencv-python==4.8
+opencv-contrib-python==4.8 
 
 # Data manipulation
 pandas==2.1.1
